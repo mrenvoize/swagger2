@@ -395,7 +395,8 @@ sub register {
       $op_spec->{'x-mojo-controller'}    ||= $paths->{$path}{'x-mojo-controller'};
       unless( defined($op_spec->{'x-mojo-controller'} ) ) {
           $op_spec->{operationId} =~ m/\b([a-z]*)([A-Z][a-z]*)*\b/ or _die($op_spec, "x-mojo-controller is missing in the swagger spec");
-          $op_spec->{'x-mojo-controller'} = $2;
+          my $namespaces = $app->routes->namespaces;
+          $op_spec->{'x-mojo-controller'} = @{$namespaces}[0].'::'.$2;
           $op_spec->{operationId} = $1;
       }
 
