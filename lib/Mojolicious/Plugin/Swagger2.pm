@@ -36,10 +36,12 @@ The input L</url> to given as argument to the plugin need to point to a
 valid L<swagger|https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md>
 document.
 
-Every operation must have a "x-mojo-controller" specified, so this plugin
-knows where to look for the decamelized "operationId", which is used as
-method name. C<x-mojo-controller> can be defined on different levels
-and gets inherited unless defined more specific:
+"x-mojo-controller" is an optional field to enable you to explicitly set the 
+mojolicious controller. If it is not present then we will attempt to split the 
+operationId into controller name plus method name.
+
+C<x-mojo-controller> can be defined on different levels and gets inherited 
+unless defined more specific:
 
   {
     "swagger": "2.0",
@@ -391,6 +393,12 @@ sub register {
 
       $op_spec->{'x-mojo-around-action'} ||= $paths->{$path}{'x-mojo-around-action'};
       $op_spec->{'x-mojo-controller'}    ||= $paths->{$path}{'x-mojo-controller'};
+      unless( defined($op_spec->{'x-mojo-controller'} ) ) {
+          $op_spec->{operationId} =~ m/\b([a-z]*)([A-Z][a-z]*)*\b/ or _die($op_spec, "x-mojo-controller is missing in the swagger spec");
+          $op_spec->{'x-mojo-controller'} = $2;
+          $op_spec->{operationId} = $1;
+      }
+
       $route_name = decamelize(
         join '::',
         map { ucfirst $_ } $op_spec->{'x-mojo-controller'},
@@ -407,7 +415,7 @@ sub _generate_request_handler {
   my ($self, $route_path, $config) = @_;
   my $op         = $config->{operationId} || $route_path;
   my $method     = decamelize(ucfirst $op);
-  my $controller = $config->{'x-mojo-controller'} or _die($config, "x-mojo-controller is missing in the swagger spec");
+  my $controller = $config->{'x-mojo-controller'};
   my $defaults   = {swagger_operation_spec => $config};
   my $handler;
 
