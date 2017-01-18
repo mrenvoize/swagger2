@@ -1,5 +1,9 @@
 Revision history for perl distribution Swagger2
 
+0.89 Not Released
+ - Add skip_all to plugin-yaml.t to prevent random failures when used
+ with JSON::Validator 0.91+
+
 0.88 2016-12-24T14:35:48+0100
  - Bump required JSON::Validator version to 0.90
  - Add deprecation warning to Mojolicious::Plugin::Swagger2
