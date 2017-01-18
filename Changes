@@ -1,6 +1,6 @@
 Revision history for perl distribution Swagger2
 
-0.89 Not Released
+0.89 2017-01-18T11:50:48+0000
  - Add skip_all to plugin-yaml.t to prevent random failures when used
  with JSON::Validator 0.91+
 
